@@ -36,8 +36,8 @@ import qualified Data.Map as DM
 
 * Client: An application running on a user's device. This can refer to
   native applications such as [SimplyE](https://github.com/NYPL-Simplified/Simplified-iOS),
-  or the web-based interface [TODO](TODO).
-  
+  or the [web-based interface](https://github.com/NYPL-Simplified/circulation-patron-web).
+
 * Bookmark: A stored position within a publication that can be used to
   navigate to that position at a later date.
 
