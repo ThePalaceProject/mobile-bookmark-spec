@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:org.librarysimplified.bookmarks:locator:1.0",
+  "title": "Simplified Bookmark Locator",
+  "description": "A bookmark locator",
+  "type": "object",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "description": "The type of locator",
+          "type": "string",
+          "pattern": "Locator"
+        },
+        "idref": {
+          "description": "The unique identifier for a chapter",
+          "type": "string"
+        },
+        "progressWithinChapter": {
+          "description": "The progress within a chapter",
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      "required": [
+        "idref",
+        "progressWithinChapter",
+        "@type"
+      ]
+    }
+  ]
+}
