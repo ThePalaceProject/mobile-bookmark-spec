@@ -208,8 +208,8 @@ motivationJSON Idling      = "http://librarysimplified.org/terms/annotation/idli
 
 * [Target](#targets) values _MUST_ be serialized with:
   * A `selector` property containing an object with:
-    * A `type` property equal to `"oa:FragmentSelector"`,
-    * A `value` property containing a [Locator](#locators) serialized as
+    * A `type` property equal to `"oa:FragmentSelector"`.
+    * A `value` property containing a [Locator](#locators) serialized as a string value.
   * A `source` property with a string value that uniquely identifies the publication.
     
 If present, the bookmark's `id` field _MUST_ be serialized as an `id`
