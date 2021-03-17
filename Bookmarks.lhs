@@ -254,6 +254,7 @@ their expected interpretation is listed below.
 |File|Type|Result|Reason|
 |----|----|------|------|
 |[valid-bookmark-0.json](valid-bookmark-0.json)|bookmark|✅ success|Valid bookmark|
+|[valid-bookmark-1.json](valid-bookmark-1.json)|bookmark|✅ success|Valid bookmark|
 |[valid-locator-0.json](valid-locator-0.json)|locator|✅ success|Valid locator|
 |[invalid-locator-0.json](invalid-locator-0.json)|locator|❌ failure|Missing @type property|
 |[invalid-locator-1.json](invalid-locator-1.json)|locator|❌ failure|Missing idref property|
@@ -271,6 +272,24 @@ validBookmark0 = Bookmark {
     ("http://librarysimplified.org/terms/time","2021-03-12T16:32:49Z"),
     ("http://librarysimplified.org/terms/device","urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c")
   ],
+  bookmarkMotivation = Idling,
+  bookmarkTarget = BookmarkTarget {
+    targetLocator = Locator {
+      chapterHref        = "/xyz.html",
+      chapterProgression = progression 0.5
+    },
+    targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
+  }
+}
+```
+
+### valid-bookmark-1.json
+
+```haskell
+validBookmark1 :: Bookmark
+validBookmark1 = Bookmark {
+  bookmarkId   = Nothing,
+  bookmarkBody = DM.fromList [],
   bookmarkMotivation = Idling,
   bookmarkTarget = BookmarkTarget {
     targetLocator = Locator {

@@ -1,0 +1,13 @@
+{
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "type": "Annotation",
+  "body": {},
+  "motivation": "http://librarysimplified.org/terms/annotation/idling",
+  "target": {
+    "selector": {
+      "type": "oa:FragmentSelector",
+      "value": "{\n  \"@type\": \"Locator\",\n  \"idref\": \"/xyz.html\",\n  \"progressWithinChapter\": 0.5\n}\n"
+    },
+    "source": "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
+  }
+}
