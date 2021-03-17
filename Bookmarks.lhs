@@ -47,6 +47,15 @@ The base format for bookmark data is the W3C [Web Annotations](https://www.w3.or
 format. The bookmark data described in this specification is expressed in terms
 of an _annotation_ with a set of strictly-defined required and optional fields.
 
+## Compatibility
+
+Historically, the Library Simplified applications have not had a consistent
+standard with regard to how bookmarks are serialized. Applications MAY
+accept bookmarks in older formats, but MUST serialize all new bookmarks
+using the format described here. This allows for a degree of migration
+compatibility; over time, all bookmarks in circulation will effectively be
+converted to the new format.
+
 ## Locators
 
 A _Locator_ uniquely identifies a position within a book. A _Locator_
