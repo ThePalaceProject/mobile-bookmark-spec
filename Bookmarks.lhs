@@ -243,3 +243,10 @@ An example of a valid bookmark is given in [valid-bookmark-0.json](valid-bookmar
   }
 }
 ```
+
+## Test Cases
+
+|File|Type|Result|Reason|
+|----|----|------|------|
+|[valid-bookmark-0.json](valid-bookmark-0.json)|bookmark|✅ success|Valid bookmark|
+|[valid-locator-0.json](valid-locator-0.json)|locator|✅ success|Valid locator|

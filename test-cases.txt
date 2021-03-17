@@ -1,0 +1,2 @@
+valid-bookmark-0.json:bookmark:success:Valid bookmark
+valid-locator-0.json:locator:success:Valid locator
