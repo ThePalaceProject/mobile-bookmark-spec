@@ -250,3 +250,8 @@ An example of a valid bookmark is given in [valid-bookmark-0.json](valid-bookmar
 |----|----|------|------|
 |[valid-bookmark-0.json](valid-bookmark-0.json)|bookmark|✅ success|Valid bookmark|
 |[valid-locator-0.json](valid-locator-0.json)|locator|✅ success|Valid locator|
+|[invalid-locator-0.json](invalid-locator-0.json)|locator|❌ failure|Missing @type property|
+|[invalid-locator-1.json](invalid-locator-1.json)|locator|❌ failure|Missing idref property|
+|[invalid-locator-2.json](invalid-locator-2.json)|locator|❌ failure|Missing progressWithinChapter property|
+|[invalid-locator-3.json](invalid-locator-3.json)|locator|❌ failure|Chapter progression is negative|
+|[invalid-locator-4.json](invalid-locator-4.json)|locator|❌ failure|Chapter progression is greater than 1.0|
