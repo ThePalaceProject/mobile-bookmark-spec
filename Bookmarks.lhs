@@ -256,9 +256,9 @@ An example of a valid bookmark is given in [valid-bookmark-0.json](valid-bookmar
 ## Test Cases
 
 This specification includes a number of test cases. Applications MUST include
-unit tests that give the results specified below for each test case, and should
+unit tests that give the results specified below for each test case, and MUST
 succeed or fail for the reasons specified. For tests cases that must succeed,
-their expected interpretation is listed below.
+their required interpretation is listed below.
 
 |File|Type|Result|Reason|
 |----|----|------|------|
