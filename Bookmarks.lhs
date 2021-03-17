@@ -246,6 +246,11 @@ An example of a valid bookmark is given in [valid-bookmark-0.json](valid-bookmar
 
 ## Test Cases
 
+This specification includes a number of test cases. Applications MUST include
+unit tests that give the results specified below for each test case, and should
+succeed or fail for the reasons specified. For tests cases that must succeed,
+their expected interpretation is listed below.
+
 |File|Type|Result|Reason|
 |----|----|------|------|
 |[valid-bookmark-0.json](valid-bookmark-0.json)|bookmark|✅ success|Valid bookmark|
@@ -255,3 +260,34 @@ An example of a valid bookmark is given in [valid-bookmark-0.json](valid-bookmar
 |[invalid-locator-2.json](invalid-locator-2.json)|locator|❌ failure|Missing progressWithinChapter property|
 |[invalid-locator-3.json](invalid-locator-3.json)|locator|❌ failure|Chapter progression is negative|
 |[invalid-locator-4.json](invalid-locator-4.json)|locator|❌ failure|Chapter progression is greater than 1.0|
+
+### valid-bookmark-0.json
+
+```haskell
+validBookmark0 :: Bookmark
+validBookmark0 = Bookmark {
+  bookmarkId   = Just "urn:uuid:715885bc-23d3-4d7d-bd87-f5e7a042c4ba",
+  bookmarkBody = DM.fromList [
+    ("http://librarysimplified.org/terms/time","2021-03-12T16:32:49Z"),
+    ("http://librarysimplified.org/terms/device","urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c")
+  ],
+  bookmarkMotivation = Idling,
+  bookmarkTarget = BookmarkTarget {
+    targetLocator = Locator {
+      chapterHref        = "/xyz.html",
+      chapterProgression = progression 0.5
+    },
+    targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
+  }
+}
+```
+
+### valid-locator-0.json
+
+```haskell
+validLocator0 :: Locator
+validLocator0 = Locator {
+  chapterHref        = "/xyz.html",
+  chapterProgression = progression 0.5
+}
+```
