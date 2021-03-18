@@ -11,14 +11,14 @@
         "@type": {
           "description": "The type of locator",
           "type": "string",
-          "pattern": "Locator"
+          "pattern": "LocatorHrefProgression"
         },
         "idref": {
-          "description": "The unique identifier for a chapter",
+          "description": "The unique identifier for a chapter (hpChapterHref)",
           "type": "string"
         },
         "progressWithinChapter": {
-          "description": "The progress within a chapter",
+          "description": "The progress within a chapter (hpChapterProgression)",
           "type": "number",
           "minimum": 0.0,
           "maximum": 1.0
@@ -27,6 +27,34 @@
       "required": [
         "idref",
         "progressWithinChapter",
+        "@type"
+      ]
+    },
+
+    {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "description": "The type of locator",
+          "type": "string",
+          "pattern": "LocatorLegacyCFI"
+        },
+        "idref": {
+          "description": "The unique identifier for a chapter (lcIdRef)",
+          "type": "string"
+        },
+        "contentCFI": {
+          "description": "The content fragment identifier (lcContentCFI)",
+          "type": "string"
+        },
+        "progressWithinChapter": {
+          "description": "The progress within a chapter (lcChapterProgression)",
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      "required": [
         "@type"
       ]
     }

@@ -1,4 +1,4 @@
 {
-  "@type": "Locator",
+  "@type": "LocatorHrefProgression",
   "idref": "/xyz.html"
 }

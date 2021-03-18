@@ -8,8 +8,6 @@
     "http://librarysimplified.org/terms/device": "urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c"
   },
 
-  "motivation": "http://librarysimplified.org/terms/annotation/idling",
-
   "target": {
     "selector": {
       "type": "oa:FragmentSelector",

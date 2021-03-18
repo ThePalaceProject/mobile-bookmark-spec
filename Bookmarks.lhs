@@ -29,6 +29,13 @@ module Bookmarks where
 import qualified Data.Map as DM
 ```
 
+The specification makes references to [RFC 3986 URI](https://tools.ietf.org/html/rfc3986)
+values. Within this specification, URIs are treated as opaque strings.
+
+```haskell
+type URI = String
+```
+
 ## Terminology
 
 * User: A human (typically a library patron) using one or more of the 
@@ -58,15 +65,29 @@ converted to the new format.
 
 ## Locators
 
-A _Locator_ uniquely identifies a position within a book. A _Locator_
-consists of a [URI](https://tools.ietf.org/html/rfc3986) that uniquely
-identifies a chapter within a publication, and a _progression_ value. A
-_progression_ value is a real number in the range `[0, 1]` where `0` is
-the beginning of a chapter, and `1` is the end of the chapter.
+A _Locator_ uniquely identifies a position within a book. There are specific
+types of locators tailored to specific reading contexts and book formats, because
+each of those contexts typically has a different means to specify locations
+within books.
+
+A _Locator_ is one of the following:
+
+  * [LocatorLegacyCFI](#locatorlegacycfi)
+  * [LocatorHrefProgression](#locatorhrefprogression)
 
 ```haskell
-type URI = String
+data Locator
+  = L_CFI             LocatorLegacyCFI
+  | L_HrefProgression LocatorHrefProgression
+  deriving (Eq, Ord, Show)
+```
 
+### Chapter Progression
+
+A _progression_ value is a real number in the range `[0, 1]` where `0` is the 
+beginning of a chapter, and `1` is the end of the chapter.
+
+```haskell
 data Progression
   = Progression Double
   deriving (Eq, Ord, Show)
@@ -76,10 +97,46 @@ progression x =
   if (x >= 0.0 && x <= 1.0)
   then Progression x
   else error "Progression must be in the range [0,1]"
+```
 
-data Locator = Locator {
-  chapterHref        :: URI,
-  chapterProgression :: Progression
+### LocatorLegacyCFI
+
+A `LocatorLegacyCFI` value consists of a set of properties used to express
+[content fragment identifiers](http://idpf.org/epub/linking/cfi/epub-cfi.html),
+such as those frequently consumed by the [Readium 1](https://readium.org/development/readium-sdk-overview/).
+There is very little consistency in the values consumed by Library Simplified 
+applications between platforms, hence the _legacy_ status of this locator type
+and the optional fields.
+
+The `lcIdRef` property refers to the `id` value of the _spine item_ of the
+target [EPUB](http://idpf.org/epub/20/spec/OPF_2.0.1_draft.htm). This, in
+practice, is the `idRef` value returned by Readium 1.
+
+The `lcContentCFI` property refers to the _content fragment identifier_ used
+to point to a specific element within the specified _spine item_.
+
+```haskell
+data LocatorLegacyCFI = LocatorLegacyCFI {
+  lcIdRef              :: Maybe String,
+  lcContentCFI         :: Maybe String,
+  lcChapterProgression :: Maybe Progression
+} deriving (Eq, Ord, Show)
+```
+
+### LocatorHrefProgression
+
+A `LocatorHrefProgression`
+consists of a [URI](https://tools.ietf.org/html/rfc3986) that uniquely
+identifies a chapter within a publication, and a _progression_ value.  
+`LocatorHrefProgression` values are used to describe the positions of books 
+being consumed in the [Readium 2](https://readium.org/technical/r2-toc/) reader
+and are expected to be the preferred form for sharing book locations for the 
+forseeable future.
+
+```haskell
+data LocatorHrefProgression = LocatorHrefProgression {
+  hpChapterHref        :: URI,
+  hpChapterProgression :: Progression
 } deriving (Eq, Ord, Show)
 ```
 
@@ -101,14 +158,14 @@ Locators _MUST_ be serialized using the following [JSON schema](locatorSchema.js
         "@type": {
           "description": "The type of locator",
           "type": "string",
-          "pattern": "Locator"
+          "pattern": "LocatorHrefProgression"
         },
         "idref": {
-          "description": "The unique identifier for a chapter (chapterHref)",
+          "description": "The unique identifier for a chapter (hpChapterHref)",
           "type": "string"
         },
         "progressWithinChapter": {
-          "description": "The progress within a chapter (chapterProgression)",
+          "description": "The progress within a chapter (hpChapterProgression)",
           "type": "number",
           "minimum": 0.0,
           "maximum": 1.0
@@ -119,18 +176,65 @@ Locators _MUST_ be serialized using the following [JSON schema](locatorSchema.js
         "progressWithinChapter",
         "@type"
       ]
+    },
+
+    {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "description": "The type of locator",
+          "type": "string",
+          "pattern": "LocatorLegacyCFI"
+        },
+        "idref": {
+          "description": "The unique identifier for a chapter (lcIdRef)",
+          "type": "string"
+        },
+        "contentCFI": {
+          "description": "The content fragment identifier (lcContentCFI)",
+          "type": "string"
+        },
+        "progressWithinChapter": {
+          "description": "The progress within a chapter (lcChapterProgression)",
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        }
+      },
+      "required": [
+        "@type"
+      ]
     }
   ]
 }
 ```
 
+A [LocatorHrefProgression](#locatorhrefprogression) value MUST be serialized 
+using the schema with `@type = LocatorHrefProgression`.
+
+A [LocatorLegacyCFI](#locatorlegacycfi) value MUST be serialized using the
+schema with `@type = LocatorLegacyCFI`.
+
+#### Examples
+
 An example of a valid, serialized locator is given in [valid-locator-0.json](valid-locator-0.json):
 
 ```json
 {
-  "@type": "Locator",
+  "@type": "LocatorHrefProgression",
   "idref": "/xyz.html",
   "progressWithinChapter": 0.5
+}
+```
+
+An example of a valid, serialized locator is given in [valid-locator-1.json](valid-locator-1.json):
+
+```json
+{
+  "@type": "LocatorLegacyCFI",
+  "idref": "xyz-html",
+  "contentCFI": "/4/2/2/2",
+  "progressWithinChapter": 0.25
 }
 ```
 
@@ -246,7 +350,7 @@ An example of a valid bookmark is given in [valid-bookmark-0.json](valid-bookmar
   "target": {
     "selector": {
       "type": "oa:FragmentSelector",
-      "value": "{\n  \"@type\": \"Locator\",\n  \"idref\": \"/xyz.html\",\n  \"progressWithinChapter\": 0.5\n}\n"
+      "value": "{\n  \"@type\": \"LocatorHrefProgression\",\n  \"idref\": \"/xyz.html\",\n  \"progressWithinChapter\": 0.5\n}\n"
     },
     "source": "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -262,15 +366,21 @@ their required interpretation is listed below.
 
 |File|Type|Result|Reason|
 |----|----|------|------|
-|[valid-bookmark-0.json](valid-bookmark-0.json)|bookmark|✅ success|Valid bookmark|
-|[valid-bookmark-1.json](valid-bookmark-1.json)|bookmark|✅ success|Valid bookmark|
-|[valid-bookmark-2.json](valid-bookmark-2.json)|bookmark|✅ success|Valid bookmark|
-|[valid-locator-0.json](valid-locator-0.json)|locator|✅ success|Valid locator|
+|File|Type|Result|Reason|
+|----|----|------|------|
+|[invalid-bookmark-0.json](invalid-bookmark-0.json)|bookmark|❌ failure|Missing a body|
+|[invalid-bookmark-1.json](invalid-bookmark-1.json)|bookmark|❌ failure|Missing a motivation|
+|[invalid-bookmark-2.json](invalid-bookmark-2.json)|bookmark|❌ failure|Missing a target|
+|[invalid-bookmark-3.json](invalid-bookmark-3.json)|bookmark|❌ failure|Target selector has an invalid type|
+|[invalid-bookmark-4.json](invalid-bookmark-4.json)|bookmark|❌ failure|Target selector has an invalid value|
 |[invalid-locator-0.json](invalid-locator-0.json)|locator|❌ failure|Missing @type property|
 |[invalid-locator-1.json](invalid-locator-1.json)|locator|❌ failure|Missing idref property|
 |[invalid-locator-2.json](invalid-locator-2.json)|locator|❌ failure|Missing progressWithinChapter property|
 |[invalid-locator-3.json](invalid-locator-3.json)|locator|❌ failure|Chapter progression is negative|
 |[invalid-locator-4.json](invalid-locator-4.json)|locator|❌ failure|Chapter progression is greater than 1.0|
+|[valid-bookmark-0.json](valid-bookmark-0.json)|bookmark|✅ success|Valid bookmark|
+|[valid-locator-0.json](valid-locator-0.json)|locator|✅ success|Valid locator|
+|[valid-locator-1.json](valid-locator-1.json)|locator|✅ success|Valid locator|
 
 ### valid-bookmark-0.json
 
@@ -284,9 +394,9 @@ validBookmark0 = Bookmark {
   ],
   bookmarkMotivation = Idling,
   bookmarkTarget = BookmarkTarget {
-    targetLocator = Locator {
-      chapterHref        = "/xyz.html",
-      chapterProgression = progression 0.5
+    targetLocator = L_HrefProgression $ LocatorHrefProgression {
+      hpChapterHref        = "/xyz.html",
+      hpChapterProgression = progression 0.5
     },
     targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -302,9 +412,9 @@ validBookmark1 = Bookmark {
   bookmarkBody = DM.fromList [],
   bookmarkMotivation = Idling,
   bookmarkTarget = BookmarkTarget {
-    targetLocator = Locator {
-      chapterHref        = "/xyz.html",
-      chapterProgression = progression 0.5
+    targetLocator = L_HrefProgression $ LocatorHrefProgression {
+      hpChapterHref        = "/xyz.html",
+      hpChapterProgression = progression 0.5
     },
     targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -320,9 +430,9 @@ validBookmark2 = Bookmark {
   bookmarkBody = DM.fromList [],
   bookmarkMotivation = Bookmarking,
   bookmarkTarget = BookmarkTarget {
-    targetLocator = Locator {
-      chapterHref        = "/xyz.html",
-      chapterProgression = progression 0.5
+    targetLocator = L_HrefProgression $ LocatorHrefProgression {
+      hpChapterHref        = "/xyz.html",
+      hpChapterProgression = progression 0.5
     },
     targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -333,8 +443,8 @@ validBookmark2 = Bookmark {
 
 ```haskell
 validLocator0 :: Locator
-validLocator0 = Locator {
-  chapterHref        = "/xyz.html",
-  chapterProgression = progression 0.5
+validLocator0 = L_HrefProgression $ LocatorHrefProgression {
+  hpChapterHref        = "/xyz.html",
+  hpChapterProgression = progression 0.5
 }
 ```

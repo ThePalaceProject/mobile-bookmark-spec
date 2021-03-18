@@ -1,7 +1,13 @@
-valid-bookmark-0.json:bookmark:success:Valid bookmark
-valid-locator-0.json:locator:success:Valid locator
+invalid-bookmark-0.json:bookmark:failure:Missing a body
+invalid-bookmark-1.json:bookmark:failure:Missing a motivation
+invalid-bookmark-2.json:bookmark:failure:Missing a target
+invalid-bookmark-3.json:bookmark:failure:Target selector has an invalid type
+invalid-bookmark-4.json:bookmark:failure:Target selector has an invalid value
 invalid-locator-0.json:locator:failure:Missing @type property
 invalid-locator-1.json:locator:failure:Missing idref property
 invalid-locator-2.json:locator:failure:Missing progressWithinChapter property
 invalid-locator-3.json:locator:failure:Chapter progression is negative
 invalid-locator-4.json:locator:failure:Chapter progression is greater than 1.0
+valid-bookmark-0.json:bookmark:success:Valid bookmark
+valid-locator-0.json:locator:success:Valid locator
+valid-locator-1.json:locator:success:Valid locator

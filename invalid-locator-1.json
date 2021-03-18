@@ -1,4 +1,4 @@
 {
-  "@type": "Locator",
+  "@type": "LocatorHrefProgression",
   "progressWithinChapter": 0.5
 }

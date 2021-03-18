@@ -12,7 +12,7 @@
 
   "target": {
     "selector": {
-      "type": "oa:FragmentSelector",
+      "type": "What?",
       "value": "{\n  \"@type\": \"LocatorHrefProgression\",\n  \"idref\": \"/xyz.html\",\n  \"progressWithinChapter\": 0.5\n}\n"
     },
     "source": "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
