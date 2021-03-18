@@ -375,7 +375,6 @@ their required interpretation is listed below.
 |[invalid-bookmark-2.json](invalid-bookmark-2.json)|bookmark|❌ failure|Missing a target|
 |[invalid-bookmark-3.json](invalid-bookmark-3.json)|bookmark|❌ failure|Target selector has an invalid type|
 |[invalid-bookmark-4.json](invalid-bookmark-4.json)|bookmark|❌ failure|Target selector has an invalid value|
-|[invalid-locator-0.json](invalid-locator-0.json)|locator|❌ failure|Missing @type property|
 |[invalid-locator-1.json](invalid-locator-1.json)|locator|❌ failure|Missing idref property|
 |[invalid-locator-2.json](invalid-locator-2.json)|locator|❌ failure|Missing progressWithinChapter property|
 |[invalid-locator-3.json](invalid-locator-3.json)|locator|❌ failure|Chapter progression is negative|
