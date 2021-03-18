@@ -216,6 +216,9 @@ using the schema with `@type = LocatorHrefProgression`.
 A [LocatorLegacyCFI](#locatorlegacycfi) value MUST be serialized using the
 schema with `@type = LocatorLegacyCFI`.
 
+When encountering a locator without a `@type` property, applications SHOULD
+assume that the format is `LocatorLegacyCFI` and parse it accordingly.
+
 #### Examples
 
 An example of a valid, serialized locator is given in [valid-locator-0.json](valid-locator-0.json):
