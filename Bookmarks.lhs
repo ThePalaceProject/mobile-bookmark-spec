@@ -370,8 +370,6 @@ their required interpretation is listed below.
 
 |File|Type|Result|Reason|
 |----|----|------|------|
-|File|Type|Result|Reason|
-|----|----|------|------|
 |[invalid-bookmark-0.json](invalid-bookmark-0.json)|bookmark|❌ failure|Missing a body|
 |[invalid-bookmark-1.json](invalid-bookmark-1.json)|bookmark|❌ failure|Missing a motivation|
 |[invalid-bookmark-2.json](invalid-bookmark-2.json)|bookmark|❌ failure|Missing a target|
