@@ -128,6 +128,7 @@ data LocatorLegacyCFI = LocatorLegacyCFI {
 A `LocatorHrefProgression`
 consists of a [URI](https://tools.ietf.org/html/rfc3986) that uniquely
 identifies a chapter within a publication, and a _progression_ value.  
+
 `LocatorHrefProgression` values are used to describe the positions of books 
 being consumed in the [Readium 2](https://readium.org/technical/r2-toc/) reader
 and are expected to be the preferred form for sharing book locations for the 
