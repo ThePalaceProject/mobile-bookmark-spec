@@ -106,7 +106,8 @@ A `LocatorLegacyCFI` value consists of a set of properties used to express
 such as those frequently consumed by the [Readium 1](https://readium.org/development/readium-sdk-overview/).
 There is very little consistency in the values consumed by Library Simplified 
 applications between platforms, hence the _legacy_ status of this locator type
-and the optional fields.
+and the optional fields. Applications are encouraged to attempt to write a
+non-`Nothing` value to at least one of the fields.
 
 The `lcIdRef` property refers to the `id` value of the _spine item_ of the
 target [EPUB](http://idpf.org/epub/20/spec/OPF_2.0.1_draft.htm). This, in
