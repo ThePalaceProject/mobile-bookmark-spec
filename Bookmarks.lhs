@@ -103,7 +103,7 @@ progression x =
 
 A `LocatorLegacyCFI` value consists of a set of properties used to express
 [content fragment identifiers](http://idpf.org/epub/linking/cfi/epub-cfi.html),
-such as those frequently consumed by the [Readium 1](https://readium.org/development/readium-sdk-overview/).
+such as those frequently consumed by the [Readium 1](https://readium.org/development/readium-sdk-overview/) reader.
 There is very little consistency in the values consumed by Library Simplified 
 applications between platforms, hence the _legacy_ status of this locator type
 and the optional fields. Applications are encouraged to attempt to write a
