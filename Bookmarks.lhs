@@ -450,3 +450,14 @@ validLocator0 = L_HrefProgression $ LocatorHrefProgression {
   hpChapterProgression = progression 0.5
 }
 ```
+
+### valid-locator-1.json
+
+```haskell
+validLocator1 :: Locator
+validLocator1 = L_CFI $ LocatorLegacyCFI {
+  lcIdRef              = Just "xyz-html",
+  lcContentCFI         = Just "/4/2/2/2",
+  lcChapterProgression = Just $ progression 0.25
+}
+```
