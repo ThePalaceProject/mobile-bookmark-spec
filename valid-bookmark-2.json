@@ -2,7 +2,7 @@
   "@context": "http://www.w3.org/ns/anno.jsonld",
   "type": "Annotation",
   "body": {},
-  "motivation": "https://www.w3.org/ns/oa#bookmarking",
+  "motivation": "http://www.w3.org/ns/oa#bookmarking",
   "target": {
     "selector": {
       "type": "oa:FragmentSelector",

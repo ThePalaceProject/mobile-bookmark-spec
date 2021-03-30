@@ -320,7 +320,7 @@ the following rules:
   
 ```haskell
 motivationJSON :: Motivation -> String
-motivationJSON Bookmarking = "https://www.w3.org/ns/oa#bookmarking"
+motivationJSON Bookmarking = "http://www.w3.org/ns/oa#bookmarking"
 motivationJSON Idling      = "http://librarysimplified.org/terms/annotation/idling"
 ```
 
