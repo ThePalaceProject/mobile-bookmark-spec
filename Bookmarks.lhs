@@ -266,13 +266,41 @@ data Bookmark = Bookmark {
 
 ### Bodies
 
-A _body_ contains optional metadata that applications _MAY_ use to derive
-extra data for display in the application. Currently, bodies are defined as
-simple maps of strings to strings, and clients are free to ignore any and all
-included values.
+A _body_ contains metadata that applications _MAY_ use to derive extra data for 
+display in the application. Currently, bodies are defined as simple maps of 
+strings to strings with a couple of extra mandatory fields.
 
 ```haskell
-type BookmarkBody = DM.Map String String
+data BookmarkBody = BookmarkBody {
+  bodyDeviceId :: String,
+  bodyTime     :: String,
+  bodyOthers   :: DM.Map String String
+} deriving (Eq, Show)
+```
+
+The `bodyTime` field _MUST_ contain an [RFC 3339](https://tools.ietf.org/html/rfc3339)
+timestamp indicating the creation time of the bookmark. The timestamp _MUST_
+be in the [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time)
+time zone.
+
+The `bodyDeviceId` field denotes the unique identifier of the device that
+created the bookmark. This is typically a [UUID](https://tools.ietf.org/html/rfc4122)
+value expressed as a [URN](https://tools.ietf.org/html/rfc3986), such as:
+
+```
+urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c
+```
+
+Clients that do not have access to an identifier in this form _SHOULD_
+use a string value of `null`. Note that this does mean serializing the
+literal value `null` as a quoted string:
+
+```
+{
+  ...
+  "http://librarysimplified.org/terms/device" = "null",
+  ...
+}
 ```
 
 ### Targets
@@ -313,7 +341,13 @@ Bookmarks _MUST_ be serialized as Web Annotation values according to
 the following rules:
 
 * [Body](#bodies) values _MUST_ be serialized as string-typed properties
-  with string-typed values in the annotation's `body` property.
+  with string-typed values in the annotation's `body` property, with the
+  following extra constraints:
+  
+  * The `bodyDeviceId` field _MUST_ be serialized as string-typed property with
+    the name `http://librarysimplified.org/terms/device`.
+  * The `bodyTime` field _MUST_ be serialized as string-typed property with
+    the name `http://librarysimplified.org/terms/time`.
   
 * [Motivation](#motivations) values _MUST_ be serialized as one of
   the two possible string values according to the `motivationJSON` function:
@@ -376,6 +410,8 @@ their required interpretation is listed below.
 |[invalid-bookmark-2.json](invalid-bookmark-2.json)|bookmark|❌ failure|Missing a target|
 |[invalid-bookmark-3.json](invalid-bookmark-3.json)|bookmark|❌ failure|Target selector has an invalid type|
 |[invalid-bookmark-4.json](invalid-bookmark-4.json)|bookmark|❌ failure|Target selector has an invalid value|
+|[invalid-bookmark-5.json](invalid-bookmark-5.json)|bookmark|❌ failure|Body lacks device ID property|
+|[invalid-bookmark-6.json](invalid-bookmark-6.json)|bookmark|❌ failure|Body lacks time property|
 |[invalid-locator-1.json](invalid-locator-1.json)|locator|❌ failure|Missing href property|
 |[invalid-locator-2.json](invalid-locator-2.json)|locator|❌ failure|Missing progressWithinChapter property|
 |[invalid-locator-3.json](invalid-locator-3.json)|locator|❌ failure|Chapter progression is negative|
@@ -390,10 +426,11 @@ their required interpretation is listed below.
 validBookmark0 :: Bookmark
 validBookmark0 = Bookmark {
   bookmarkId   = Just "urn:uuid:715885bc-23d3-4d7d-bd87-f5e7a042c4ba",
-  bookmarkBody = DM.fromList [
-    ("http://librarysimplified.org/terms/time","2021-03-12T16:32:49Z"),
-    ("http://librarysimplified.org/terms/device","urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c")
-  ],
+  bookmarkBody = BookmarkBody {
+    bodyDeviceId = "urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c",
+    bodyTime     = "2021-03-12T16:32:49Z",
+    bodyOthers   = DM.empty
+  },
   bookmarkMotivation = Idling,
   bookmarkTarget = BookmarkTarget {
     targetLocator = L_HrefProgression $ LocatorHrefProgression {
@@ -411,7 +448,11 @@ validBookmark0 = Bookmark {
 validBookmark1 :: Bookmark
 validBookmark1 = Bookmark {
   bookmarkId   = Nothing,
-  bookmarkBody = DM.fromList [],
+  bookmarkBody = BookmarkBody {
+    bodyDeviceId = "urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c",
+    bodyTime     = "2021-03-12T16:32:49Z",
+    bodyOthers   = DM.empty
+  },
   bookmarkMotivation = Idling,
   bookmarkTarget = BookmarkTarget {
     targetLocator = L_HrefProgression $ LocatorHrefProgression {
@@ -429,7 +470,11 @@ validBookmark1 = Bookmark {
 validBookmark2 :: Bookmark
 validBookmark2 = Bookmark {
   bookmarkId   = Nothing,
-  bookmarkBody = DM.fromList [],
+  bookmarkBody = BookmarkBody {
+    bodyDeviceId = "urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c",
+    bodyTime     = "2021-03-12T16:32:49Z",
+    bodyOthers   = DM.empty
+  },
   bookmarkMotivation = Bookmarking,
   bookmarkTarget = BookmarkTarget {
     targetLocator = L_HrefProgression $ LocatorHrefProgression {

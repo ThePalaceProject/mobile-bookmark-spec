@@ -3,6 +3,8 @@ invalid-bookmark-1.json:bookmark:failure:Missing a motivation
 invalid-bookmark-2.json:bookmark:failure:Missing a target
 invalid-bookmark-3.json:bookmark:failure:Target selector has an invalid type
 invalid-bookmark-4.json:bookmark:failure:Target selector has an invalid value
+invalid-bookmark-5.json:bookmark:failure:Body lacks device ID property
+invalid-bookmark-6.json:bookmark:failure:Body lacks time property
 invalid-locator-1.json:locator:failure:Missing idref property
 invalid-locator-2.json:locator:failure:Missing progressWithinChapter property
 invalid-locator-3.json:locator:failure:Chapter progression is negative
