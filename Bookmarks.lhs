@@ -162,7 +162,7 @@ Locators _MUST_ be serialized using the following [JSON schema](locatorSchema.js
           "type": "string",
           "pattern": "LocatorHrefProgression"
         },
-        "idref": {
+        "href": {
           "description": "The unique identifier for a chapter (hpChapterHref)",
           "type": "string"
         },
@@ -174,7 +174,7 @@ Locators _MUST_ be serialized using the following [JSON schema](locatorSchema.js
         }
       },
       "required": [
-        "idref",
+        "href",
         "progressWithinChapter",
         "@type"
       ]
@@ -227,7 +227,7 @@ An example of a valid, serialized locator is given in [valid-locator-0.json](val
 ```json
 {
   "@type": "LocatorHrefProgression",
-  "idref": "/xyz.html",
+  "href": "/xyz.html",
   "progressWithinChapter": 0.5
 }
 ```
@@ -355,7 +355,7 @@ An example of a valid bookmark is given in [valid-bookmark-0.json](valid-bookmar
   "target": {
     "selector": {
       "type": "oa:FragmentSelector",
-      "value": "{\n  \"@type\": \"LocatorHrefProgression\",\n  \"idref\": \"/xyz.html\",\n  \"progressWithinChapter\": 0.5\n}\n"
+      "value": "{\n  \"@type\": \"LocatorHrefProgression\",\n  \"href\": \"/xyz.html\",\n  \"progressWithinChapter\": 0.5\n}\n"
     },
     "source": "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -376,7 +376,7 @@ their required interpretation is listed below.
 |[invalid-bookmark-2.json](invalid-bookmark-2.json)|bookmark|❌ failure|Missing a target|
 |[invalid-bookmark-3.json](invalid-bookmark-3.json)|bookmark|❌ failure|Target selector has an invalid type|
 |[invalid-bookmark-4.json](invalid-bookmark-4.json)|bookmark|❌ failure|Target selector has an invalid value|
-|[invalid-locator-1.json](invalid-locator-1.json)|locator|❌ failure|Missing idref property|
+|[invalid-locator-1.json](invalid-locator-1.json)|locator|❌ failure|Missing href property|
 |[invalid-locator-2.json](invalid-locator-2.json)|locator|❌ failure|Missing progressWithinChapter property|
 |[invalid-locator-3.json](invalid-locator-3.json)|locator|❌ failure|Chapter progression is negative|
 |[invalid-locator-4.json](invalid-locator-4.json)|locator|❌ failure|Chapter progression is greater than 1.0|

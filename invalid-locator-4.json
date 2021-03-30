@@ -1,5 +1,5 @@
 {
   "@type": "LocatorHrefProgression",
-  "idref": "/xyz.html",
+  "href": "/xyz.html",
   "progressWithinChapter": 2.0
 }
