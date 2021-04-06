@@ -5,7 +5,7 @@ Simplified-Bookmarks-Spec
 
 The contents of this repository define a specification describing the format
 of bookmark data shared between clients and server in the Library Simplified
-ecosystem. The intention is to declare a common format for bookmarks that 
+ecosystem. The intention is to declare a common format for bookmarks that
 clients on different platforms (Web, iOS, Android) can use to synchronize
 reading positions. The specification is described as executable Literate
 Haskell and can be executed and inspected directly using ghci.
@@ -38,7 +38,7 @@ type URI = String
 
 ## Terminology
 
-* User: A human (typically a library patron) using one or more of the 
+* User: A human (typically a library patron) using one or more of the
   Library Simplified applications.
 
 * Client: An application running on a user's device. This can refer to
@@ -84,7 +84,7 @@ data Locator
 
 ### Chapter Progression
 
-A _progression_ value is a real number in the range `[0, 1]` where `0` is the 
+A _progression_ value is a real number in the range `[0, 1]` where `0` is the
 beginning of a chapter, and `1` is the end of the chapter.
 
 ```haskell
@@ -104,7 +104,7 @@ progression x =
 A `LocatorLegacyCFI` value consists of a set of properties used to express
 [content fragment identifiers](http://idpf.org/epub/linking/cfi/epub-cfi.html),
 such as those frequently consumed by the [Readium 1](https://readium.org/development/readium-sdk-overview/) reader.
-There is very little consistency in the values consumed by Library Simplified 
+There is very little consistency in the values consumed by Library Simplified
 applications between platforms, hence the _legacy_ status of this locator type
 and the optional fields. Applications are encouraged to attempt to write a
 non-`Nothing` value to at least one of the fields.
@@ -128,11 +128,11 @@ data LocatorLegacyCFI = LocatorLegacyCFI {
 
 A `LocatorHrefProgression`
 consists of a [URI](https://tools.ietf.org/html/rfc3986) that uniquely
-identifies a chapter within a publication, and a _progression_ value.  
+identifies a chapter within a publication, and a _progression_ value.
 
-`LocatorHrefProgression` values are used to describe the positions of books 
+`LocatorHrefProgression` values are used to describe the positions of books
 being consumed in the [Readium 2](https://readium.org/technical/r2-toc/) reader
-and are expected to be the preferred form for sharing book locations for the 
+and are expected to be the preferred form for sharing book locations for the
 forseeable future.
 
 ```haskell
@@ -211,7 +211,7 @@ Locators _MUST_ be serialized using the following [JSON schema](locatorSchema.js
 }
 ```
 
-A [LocatorHrefProgression](#locatorhrefprogression) value MUST be serialized 
+A [LocatorHrefProgression](#locatorhrefprogression) value MUST be serialized
 using the schema with `@type = LocatorHrefProgression`.
 
 A [LocatorLegacyCFI](#locatorlegacycfi) value MUST be serialized using the
@@ -266,8 +266,8 @@ data Bookmark = Bookmark {
 
 ### Bodies
 
-A _body_ contains metadata that applications _MAY_ use to derive extra data for 
-display in the application. Currently, bodies are defined as simple maps of 
+A _body_ contains metadata that applications _MAY_ use to derive extra data for
+display in the application. Currently, bodies are defined as simple maps of
 strings to strings with a couple of extra mandatory fields.
 
 ```haskell
@@ -343,15 +343,15 @@ the following rules:
 * [Body](#bodies) values _MUST_ be serialized as string-typed properties
   with string-typed values in the annotation's `body` property, with the
   following extra constraints:
-  
+
   * The `bodyDeviceId` field _MUST_ be serialized as string-typed property with
     the name `http://librarysimplified.org/terms/device`.
   * The `bodyTime` field _MUST_ be serialized as string-typed property with
     the name `http://librarysimplified.org/terms/time`.
-  
+
 * [Motivation](#motivations) values _MUST_ be serialized as one of
   the two possible string values according to the `motivationJSON` function:
-  
+
 ```haskell
 motivationJSON :: Motivation -> String
 motivationJSON Bookmarking = "http://www.w3.org/ns/oa#bookmarking"
@@ -363,7 +363,7 @@ motivationJSON Idling      = "http://librarysimplified.org/terms/annotation/idli
     * A `type` property equal to `"oa:FragmentSelector"`.
     * A `value` property containing a [Locator](#locators) serialized as a string value.
   * A `source` property with a string value that uniquely identifies the publication.
-    
+
 If present, the bookmark's `id` field _MUST_ be serialized as an `id`
 property with a string value equal to the `id` field.
 
@@ -417,6 +417,9 @@ their required interpretation is listed below.
 |[invalid-locator-3.json](invalid-locator-3.json)|locator|❌ failure|Chapter progression is negative|
 |[invalid-locator-4.json](invalid-locator-4.json)|locator|❌ failure|Chapter progression is greater than 1.0|
 |[valid-bookmark-0.json](valid-bookmark-0.json)|bookmark|✅ success|Valid bookmark|
+|[valid-bookmark-1.json](valid-bookmark-1.json)|bookmark|✅ success|Valid bookmark|
+|[valid-bookmark-2.json](valid-bookmark-2.json)|bookmark|✅ success|Valid bookmark|
+|[valid-bookmark-3.json](valid-bookmark-3.json)|bookmark|✅ success|Valid bookmark|
 |[valid-locator-0.json](valid-locator-0.json)|locator|✅ success|Valid locator|
 |[valid-locator-1.json](valid-locator-1.json)|locator|✅ success|Valid locator|
 
@@ -470,6 +473,28 @@ validBookmark1 = Bookmark {
 validBookmark2 :: Bookmark
 validBookmark2 = Bookmark {
   bookmarkId   = Nothing,
+  bookmarkBody = BookmarkBody {
+    bodyDeviceId = "urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c",
+    bodyTime     = "2021-03-12T16:32:49Z",
+    bodyOthers   = DM.empty
+  },
+  bookmarkMotivation = Bookmarking,
+  bookmarkTarget = BookmarkTarget {
+    targetLocator = L_HrefProgression $ LocatorHrefProgression {
+      hpChapterHref        = "/xyz.html",
+      hpChapterProgression = progression 0.5
+    },
+    targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
+  }
+}
+```
+
+### valid-bookmark-3.json
+
+```haskell
+validBookmark0 :: Bookmark
+validBookmark0 = Bookmark {
+  bookmarkId   = Just "urn:uuid:715885bc-23d3-4d7d-bd87-f5e7a042c4ba",
   bookmarkBody = BookmarkBody {
     bodyDeviceId = "urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c",
     bodyTime     = "2021-03-12T16:32:49Z",
