@@ -228,7 +228,7 @@ An example of a valid, serialized locator is given in [valid-locator-0.json](val
 {
   "@type": "LocatorHrefProgression",
   "href": "/xyz.html",
-  "progressWithinChapter": 0.5
+  "progressWithinChapter": 0.666
 }
 ```
 
@@ -253,7 +253,8 @@ A _Bookmark_ is a Web Annotation with the following data:
   * A [target](#targets) that uniquely identifies the publication, and includes
     a _selector_ that includes a serialized [Locator](#locators).
   * An optional _id_ value that uniquely identifies the bookmark. This
-    is typically assigned by the server.
+    is typically assigned by the server, and a server publishing bookmarks
+    to a client MUST include this value in each bookmark.
 
 ```haskell
 data Bookmark = Bookmark {
@@ -389,7 +390,7 @@ An example of a valid bookmark is given in [valid-bookmark-0.json](valid-bookmar
   "target": {
     "selector": {
       "type": "oa:FragmentSelector",
-      "value": "{\n  \"@type\": \"LocatorHrefProgression\",\n  \"href\": \"/xyz.html\",\n  \"progressWithinChapter\": 0.5\n}\n"
+      "value": "{\n  \"@type\": \"LocatorHrefProgression\",\n  \"href\": \"/xyz.html\",\n  \"progressWithinChapter\": 0.666\n}\n"
     },
     "source": "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -438,7 +439,7 @@ validBookmark0 = Bookmark {
   bookmarkTarget = BookmarkTarget {
     targetLocator = L_HrefProgression $ LocatorHrefProgression {
       hpChapterHref        = "/xyz.html",
-      hpChapterProgression = progression 0.5
+      hpChapterProgression = progression 0.666
     },
     targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -460,7 +461,7 @@ validBookmark1 = Bookmark {
   bookmarkTarget = BookmarkTarget {
     targetLocator = L_HrefProgression $ LocatorHrefProgression {
       hpChapterHref        = "/xyz.html",
-      hpChapterProgression = progression 0.5
+      hpChapterProgression = progression 0.666
     },
     targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -482,7 +483,7 @@ validBookmark2 = Bookmark {
   bookmarkTarget = BookmarkTarget {
     targetLocator = L_HrefProgression $ LocatorHrefProgression {
       hpChapterHref        = "/xyz.html",
-      hpChapterProgression = progression 0.5
+      hpChapterProgression = progression 0.666
     },
     targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -504,7 +505,7 @@ validBookmark0 = Bookmark {
   bookmarkTarget = BookmarkTarget {
     targetLocator = L_HrefProgression $ LocatorHrefProgression {
       hpChapterHref        = "/xyz.html",
-      hpChapterProgression = progression 0.5
+      hpChapterProgression = progression 0.666
     },
     targetSource = "urn:uuid:1daa8de6-94e8-4711-b7d1-e43b572aa6e0"
   }
@@ -517,7 +518,7 @@ validBookmark0 = Bookmark {
 validLocator0 :: Locator
 validLocator0 = L_HrefProgression $ LocatorHrefProgression {
   hpChapterHref        = "/xyz.html",
-  hpChapterProgression = progression 0.5
+  hpChapterProgression = progression 0.666
 }
 ```
 
