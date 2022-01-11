@@ -213,6 +213,53 @@ data LocatorAudioBookTime = LocatorAudioBookTime {
 } deriving (Eq, Ord, Show)
 ```
 
+#### Interpretation
+
+Audiobook players differ in their support for `part` values. Some manifests will not contain `part` numbers,
+whilst other manifests are provided to players that actually require them in order to work at all. Manifests
+that represent _Findaway_ audiobooks, for example, include both `findaway:part` and `findaway:sequence` values in
+each entry of the manifest's `readingOrder`, and the _Findaway_ player cannot work without access to these
+values. Other manifest formats do not include `part` and `chapter` numbers at all, and simply assume that players
+will walk through the list of chapters in manifest declaration order. This raises the question of how the
+`abtPart` and `abtChapter` fields in `LocatorAudioBookTime` values should be interpreted when loaded into
+an arbitrary audiobook player.
+
+For _Findaway_ audiobooks, the `abtPart` and `abtChapter` fields for a serialized locator should be equal to
+the `findaway:part` and `findaway:sequence` fields, respectively, of the `readingOrder` manifest element that
+was active when the locator was serialized.
+
+For all other audiobooks, the `abtPart` field should be `0`, and the `abtChapter` field should be equal to the
+index of the `readingOrder` manifest element that was active when the locator was serialized.
+
+When loading a locator value `L` in a _Findaway_ player, search for a `readingOrder` element that contains
+a `findaway:part` and `findaway:sequence` value equal to the `L.abtPart` and `L.abtChapter` fields, respectively.
+
+```pseudocode
+LocatorAudioBookTime L;
+
+for (element in readingOrder) {
+  if (element.part == L.abtPart && element.chapter == L.abtChapter) {
+    openForReading (element);
+    return;
+  }
+}
+
+throw ErrorNoSuchChapter();
+```
+
+When loading a locator value `L` in any other player, use `readingOrder[L.abtChapter]`.
+
+```pseudocode
+LocatorAudioBookTime L;
+
+if (L.abtChapter < readingOrder.size) {
+  openForReading (readingOrder [L.abtChapter]);
+  return;
+}
+
+throw ErrorNoSuchChapter();
+```
+
 ### Serialization
 
 Locators _MUST_ be serialized using the following [JSON schema](locatorSchema.json):
