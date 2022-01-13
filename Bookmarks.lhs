@@ -79,6 +79,8 @@ A _Locator_ is one of the following:
 data Locator
   = L_CFI             LocatorLegacyCFI
   | L_HrefProgression LocatorHrefProgression
+  | L_Page            LocatorPage
+  | L_AudioBookTime   LocatorAudioBookTime
   deriving (Eq, Ord, Show)
 ```
 
@@ -142,6 +144,122 @@ data LocatorHrefProgression = LocatorHrefProgression {
 } deriving (Eq, Ord, Show)
 ```
 
+### LocatorPage
+
+A `LocatorPage` consists of a single integer value that uniquely identifies
+a page within an integer page-based publication such as PDF.
+
+A `Page` number must be non-negative.
+
+```haskell
+data Page
+  = Page Integer
+  deriving (Eq, Ord, Show)
+
+page :: Integer -> Page
+page x =
+  if (x >= 0)
+  then Page x
+  else error "Page must be in non-negative"
+
+data LocatorPage = LocatorPage {
+  ipPage :: Page
+} deriving (Eq, Ord, Show)
+```
+
+### LocatorAudioBookTime
+
+A `LocatorAudioBookTime` consists of a _part_ and _chapter_ number, and a time
+in milliseconds. This is expected to uniquely identify a position within an
+audio book.
+
+`Part` and `Chapter` numbers must be non-negative, as must `TimeMilliseconds` values.
+
+```haskell
+data Part
+  = Part Integer
+  deriving (Eq, Ord, Show)
+
+data Chapter
+  = Chapter Integer
+  deriving (Eq, Ord, Show)
+
+data TimeMilliseconds
+  = TimeMilliseconds Integer
+  deriving (Eq, Ord, Show)
+
+part :: Integer -> Part
+part x =
+  if (x >= 0)
+  then Part x
+  else error "Part must be in non-negative"
+
+chapter :: Integer -> Chapter
+chapter x =
+  if (x >= 0)
+  then Chapter x
+  else error "Chapter must be in non-negative"
+
+time :: Integer -> TimeMilliseconds
+time x =
+  if (x >= 0)
+  then TimeMilliseconds x
+  else error "TimeMilliseconds must be in non-negative"
+
+data LocatorAudioBookTime = LocatorAudioBookTime {
+  abtPart    :: Part,
+  abtChapter :: Chapter,
+  abtTime    :: TimeMilliseconds
+} deriving (Eq, Ord, Show)
+```
+
+#### Interpretation
+
+Audiobook players differ in their support for `part` values. Some manifests will not contain `part` numbers,
+whilst other manifests are provided to players that actually require them in order to work at all. Manifests
+that represent _Findaway_ audiobooks, for example, include both `findaway:part` and `findaway:sequence` values in
+each entry of the manifest's `readingOrder`, and the _Findaway_ player cannot work without access to these
+values. Other manifest formats do not include `part` and `chapter` numbers at all, and simply assume that players
+will walk through the list of chapters in manifest declaration order. This raises the question of how the
+`abtPart` and `abtChapter` fields in `LocatorAudioBookTime` values should be interpreted when loaded into
+an arbitrary audiobook player.
+
+For _Findaway_ audiobooks, the `abtPart` and `abtChapter` fields for a serialized locator should be equal to
+the `findaway:part` and `findaway:sequence` fields, respectively, of the `readingOrder` manifest element that
+was active when the locator was serialized.
+
+For all other audiobooks, the `abtPart` field should be `0`, and the `abtChapter` field should be equal to the
+index of the `readingOrder` manifest element that was active when the locator was serialized.
+
+When loading a locator value `L` in a _Findaway_ player, search for a `readingOrder` element that contains
+a `findaway:part` and `findaway:sequence` value equal to the `L.abtPart` and `L.abtChapter` fields, respectively.
+
+```pseudocode
+LocatorAudioBookTime L;
+
+for (element in readingOrder) {
+  if (element.part == L.abtPart && element.chapter == L.abtChapter) {
+    openForReading (element);
+    return;
+  }
+}
+
+throw ErrorNoSuchChapter();
+```
+
+When loading a locator value `L` in any other player, use `readingOrder[L.abtChapter]`.
+
+```pseudocode
+LocatorAudioBookTime L;
+
+if (L.abtChapter < readingOrder.size) {
+  openForReading (readingOrder [L.abtChapter]);
+  return;
+}
+
+throw ErrorNoSuchChapter();
+```
+
 ### Serialization
 
 Locators _MUST_ be serialized using the following [JSON schema](locatorSchema.json):
@@ -174,9 +292,9 @@ Locators _MUST_ be serialized using the following [JSON schema](locatorSchema.js
         }
       },
       "required": [
+        "@type",
         "href",
-        "progressWithinChapter",
-        "@type"
+        "progressWithinChapter"
       ]
     },
 
@@ -206,6 +324,58 @@ Locators _MUST_ be serialized using the following [JSON schema](locatorSchema.js
       "required": [
         "@type"
       ]
+    },
+
+    {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "description": "The type of locator",
+          "type": "string",
+          "pattern": "LocatorPage"
+        },
+        "page": {
+          "description": "The integer page number (ipPage)",
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "@type",
+        "page"
+      ]
+    },
+
+    {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "description": "The type of locator",
+          "type": "string",
+          "pattern": "LocatorAudioBookTime"
+        },
+        "part": {
+          "description": "The part number (abtPart)",
+          "type": "number",
+          "minimum": 0
+        },
+        "chapter": {
+          "description": "The chapter number (abtChapter)",
+          "type": "number",
+          "minimum": 0
+        },
+        "time": {
+          "description": "The time (abtTime)",
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "@type",
+        "part",
+        "chapter",
+        "time"
+      ]
     }
   ]
 }
@@ -216,6 +386,12 @@ using the schema with `@type = LocatorHrefProgression`.
 
 A [LocatorLegacyCFI](#locatorlegacycfi) value MUST be serialized using the
 schema with `@type = LocatorLegacyCFI`.
+
+A [LocatorPage](#locatorpage) value MUST be serialized using the
+schema with `@type = LocatorPage`.
+
+A [LocatorAudioBookTime](#locatoraudiobooktime) value MUST be serialized using the
+schema with `@type = LocatorAudioBookTime`.
 
 When encountering a locator without a `@type` property, applications SHOULD
 assume that the format is `LocatorLegacyCFI` and parse it accordingly.
@@ -240,6 +416,26 @@ An example of a valid, serialized locator is given in [valid-locator-1.json](val
   "idref": "xyz-html",
   "contentCFI": "/4/2/2/2",
   "progressWithinChapter": 0.25
+}
+```
+
+An example of a valid, serialized locator is given in [valid-locator-2.json](valid-locator-2.json):
+
+```json
+{
+  "@type": "LocatorPage",
+  "page": 23
+}
+```
+
+An example of a valid, serialized locator is given in [valid-locator-3.json](valid-locator-3.json):
+
+```json
+{
+  "@type": "LocatorAudioBookTime",
+  "part": 3,
+  "chapter": 32,
+  "time": 78000
 }
 ```
 
@@ -423,6 +619,8 @@ their required interpretation is listed below.
 |[valid-bookmark-3.json](valid-bookmark-3.json)|bookmark|✅ success|Valid bookmark|
 |[valid-locator-0.json](valid-locator-0.json)|locator|✅ success|Valid locator|
 |[valid-locator-1.json](valid-locator-1.json)|locator|✅ success|Valid locator|
+|[valid-locator-2.json](valid-locator-2.json)|locator|✅ success|Valid locator|
+|[valid-locator-3.json](valid-locator-3.json)|locator|✅ success|Valid locator|
 
 ### valid-bookmark-0.json
 
@@ -493,8 +691,8 @@ validBookmark2 = Bookmark {
 ### valid-bookmark-3.json
 
 ```haskell
-validBookmark0 :: Bookmark
-validBookmark0 = Bookmark {
+validBookmark3 :: Bookmark
+validBookmark3 = Bookmark {
   bookmarkId   = Just "urn:uuid:715885bc-23d3-4d7d-bd87-f5e7a042c4ba",
   bookmarkBody = BookmarkBody {
     bodyDeviceId = "urn:uuid:c83db5b1-9130-4b86-93ea-634b00235c7c",
